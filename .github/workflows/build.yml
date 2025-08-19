@@ -22,3 +22,9 @@ jobs:
 
       - name: Run Executable
         run: ./app
+
+      - name: Build Tests
+        run: make test
+
+      - name: Run Tests
+        run: ./test
