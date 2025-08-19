@@ -16,5 +16,5 @@ int main()
     assert(strcmp("Hello", "Hello") == 0);
 
     printf("All tests passed!\n");
-    retrun 0;
+    return 0;
 }
