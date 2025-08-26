@@ -1,10 +1,12 @@
 
+
 name: Multi-platform Build and Test
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
+
+  pull-request:
     branches: [ "main" ]
 
 jobs:
