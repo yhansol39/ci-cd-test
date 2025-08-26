@@ -1,5 +1,4 @@
-
-name: Multi-platform Build and Test
+name: Windows Build and Test
 
 on:
   push:
@@ -9,43 +8,28 @@ on:
 
 jobs:
   build:
-    # Linux + Windows 동시 실행
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Linux 환경 설정
-      - name: Install GCC (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y build-essential
+      # 확인용: Windows 버전
+      - name: Verify OS
+        run: systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
 
-      # Windows 환경 설정 (mingw 이용)
-      - name: Install GCC (Windows)
-        if: runner.os == 'Windows'
-        run: choco install mingw -y
+      # Windows 기본 제공 cl 컴파일러 사용 (Visual Studio Build Tools)
+      # 없으면 GitHub Actions Windows에는 기본적으로 MSVC 설치됨
+      - name: Build App
+        run: |
+          cl /EHsc main.c /Feapp.exe
 
-      - name: Verify GCC version
-        run: gcc --version
+      - name: Build Test
+        run: |
+          cl /EHsc test.c /Fetest.exe
 
-      # Linux 빌드
-      - name: Build Project (Linux)
-        if: runner.os == 'Linux'
-        run: make app
+      - name: Run App
+        run: .\app.exe
 
-      - name: Run Tests (Linux)
-        if: runner.os == 'Linux'
-        run: ./test
-
-      # Windows 빌드
-      - name: Build Project (Windows)
-        if: runner.os == 'Windows'
-        run: mingw32-make app  # Windows용 make 실행
-
-      - name: Run Tests (Windows)
-        if: runner.os == 'Windows'
-        run: test.exe  # Windows 실행파일 실행
+      - name: Run Test
+        run: .\test.exe
