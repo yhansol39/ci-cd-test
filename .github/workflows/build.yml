@@ -11,23 +11,27 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # 1. 코드 가져오기
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 확인용: Windows 버전
-      - name: Verify OS
-        run: systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+      # 2. MinGW 설치 (GCC)
+      - name: Install GCC
+        run: choco install mingw -y
 
-      # Windows 기본 제공 cl 컴파일러 사용 (Visual Studio Build Tools)
-      # 없으면 GitHub Actions Windows에는 기본적으로 MSVC 설치됨
+      # 3. GCC 설치 확인
+      - name: Verify GCC
+        run: gcc --version
+
+      # 4. main.c 빌드
       - name: Build App
-        run: |
-          cl /EHsc main.c /Feapp.exe
+        run: gcc main.c -o app.exe
 
+      # 5. test.c 빌드
       - name: Build Test
-        run: |
-          cl /EHsc test.c /Fetest.exe
+        run: gcc test.c -o test.exe
 
+      # 6. 실행
       - name: Run App
         run: .\app.exe
 
