@@ -21,7 +21,7 @@ jobs:
 
       # 3. PATH 등록 (GCC 실행 가능하도록)
       - name: Add MinGW to PATH
-        run: echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        run: echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       # 4. main.c 빌드 (정적 링크 옵션 추가)
       - name: Build App
