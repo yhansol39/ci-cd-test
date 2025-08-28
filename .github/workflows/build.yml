@@ -1,9 +1,7 @@
-name: Windows Build and Test
+name: Windows Build with Artifacts
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -27,13 +25,23 @@ jobs:
       - name: Build App
         run: gcc main.c -o app.exe
 
-      # 5. test.c 빌드
-      - name: Build Test
-        run: gcc test.c -o test.exe
+      # 5. 테스트 실행 후 결과를 파일로 저장
+      - name: Run tests and save output
+        run: |
+          echo "===Running Tests ===" > test-results.txt
+          ./app.exe >> test-results.txt
+          echo "=== Tests Finished ===" >> test-results.txt
 
-      # 6. 실행
-      - name: Run App
-        run: .\app.exe
+      # 6. 빌드 산출물(app.exe) 업로드
+      - name: Upload build artifact (exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app
+          path: app.exe
 
-      - name: Run Test
-        run: .\test.exe
+      # 7. 테스트 결과 업로드
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.txt
