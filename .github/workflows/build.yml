@@ -1,7 +1,9 @@
-name: Windows Build with Artifacts
+name: Windows Build and Test (Static EXE)
 
 on:
   push:
+    branches: [ "main" ]
+  pull-request:
     branches: [ "main" ]
 
 jobs:
@@ -17,13 +19,13 @@ jobs:
       - name: Install GCC
         run: choco install mingw -y
 
-      # 3. GCC 설치 확인
-      - name: Verify GCC
-        run: gcc --version
+      # 3. PATH 등록 (GCC 실행 가능하도록)
+      - name: Add MinGW to PATH
+        run: echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      # 4. main.c 빌드
+      # 4. main.c 빌드 (정적 링크 옵션 추가)
       - name: Build App
-        run: gcc main.c -o app.exe
+        run: gcc main.c -o app.exe -static
 
       # 5. 테스트 실행 후 결과를 파일로 저장
       - name: Run tests and save output
@@ -32,16 +34,11 @@ jobs:
           ./app.exe >> test-results.txt
           echo "=== Tests Finished ===" >> test-results.txt
 
-      # 6. 빌드 산출물(app.exe) 업로드
-      - name: Upload build artifact (exe)
+      # 6. 아티팩트 업로드 (.exe와 결과 로그)
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: my-app
-          path: app.exe
-
-      # 7. 테스트 결과 업로드
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results.txt
+          name: windows-build-artifacts
+          path: |
+            app.exe
+            test-results.txt
